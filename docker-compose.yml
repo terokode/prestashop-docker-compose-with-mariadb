@@ -1,0 +1,59 @@
+version: '3.6'
+
+services:
+  prestashop:
+    image: "prestashop/prestashop:1.7-7.2-apache"
+    ports:
+      - "80:80"
+    depends_on:
+      - "mariadb"
+    links:
+      - mariadb
+    environment:
+      - PS_DEV_MODE=${PS_DEV_MODE}  # default: 0
+      - PS_HOST_MODE=${PS_HOST_MODE}  # default: 0
+      - PS_DEMO_MODE=${PS_DEMO_MODE}  # default: 0
+      - DB_SERVER=mariadb  # default localhost
+      - DB_USER=${DB_USER}
+      - DB_PASSWD=${DB_PASSWD}
+      - DB_PREFIX=${DB_PREFIX}
+      - DB_NAME=${DB_NAME}
+      - PS_INSTALL_AUTO=1  # default 0?
+      - PS_ERASE_DB=${PS_ERASE_DB}  # drop db. Default 0
+      - PS_DOMAIN=${PS_DOMAIN}
+      - PS_LANGUAGE=${PS_LANGUAGE}
+      - PS_COUNTRY=${PS_COUNTRY}
+      - PS_ALL_LANGUAGES=0  # default 0
+      - PS_FOLDER_ADMIN=panel
+      - PS_FOLDER_INSTALL=install_remove
+      - PS_ENABLE_SSL=0  # default 0
+      - ADMIN_MAIL=${PS_ADMIN_EMAIL}
+      - ADMIN_PASSWD=${PS_ADMIN_PASSWD}
+    volumes:
+      - "${PRESTASHOP_PATH}/modules/${MY_MODULE_NAME}:/var/www/html/modules/${MY_MODULE_NAME}"
+      # - "${PRESTASHOP_PATH}/themes:/var/www/html/themes"
+      # - "${PRESTASHOP_PATH}/override:/var/www/html/override"
+    networks:
+      prestashop_net:
+        ipv4_address: 10.10.12.10
+
+  mariadb:
+    image: "mariadb:10.4"
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWD}
+    networks:
+      prestashop_net:
+        ipv4_address: 10.10.12.11
+
+networks:
+  prestashop_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.12.0/24"
