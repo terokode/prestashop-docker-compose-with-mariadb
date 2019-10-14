@@ -22,7 +22,7 @@ class Kode_Module extends Module
         parent::__construct();
 
         $this->displayName = $this->l('Kode Module');
-        $this->description = $this->l('Koded Module - Killer sowtware');
+        $this->description = $this->l('Koded Module - Killer software');
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
